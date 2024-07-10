@@ -1,8 +1,9 @@
 import http from "./config";
 
-const order = {
-  get: () => http.get("/client/all", { params: { page: 1, limit: 10 } }),
-  delete: (id) => http.delete("/client", { params: { id: id } }),
+const client = {
+  get: (params) => http.get("/client/search", { params }),
+  delete: (id, owner_id) =>
+    http.delete("/client", { params: { id: id, owner_id: owner_id } }),
 };
 
-export default order;
+export default client;

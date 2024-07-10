@@ -40,6 +40,7 @@ const Index = ({ open, handleClose, item }) => {
         response = await service.update({ ...item, ...values });
         if (response.status === 200) {
           toast.success("Service updated successfully!");
+          setTimeout(() => {}, 3000);
         }
       } else {
         response = await service.create(values);

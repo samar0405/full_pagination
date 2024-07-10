@@ -7,7 +7,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import Pagination from "@mui/material/Pagination";
+
 import { order } from "@service";
 import { EditOrder } from "@modal";
 import editImg from "./../../../assets/edit.svg";
@@ -47,8 +47,8 @@ const ActionButton = styled("img")(({ theme }) => ({
 const CustomizedTables = ({ data }) => {
   const [edit, setEdit] = useState({});
   const [open, setOpen] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+  // const [currentPage, setCurrentPage] = useState(1);
+  // const itemsPerPage = 5;
 
   const deleteItem = async (id) => {
     try {
@@ -68,14 +68,14 @@ const CustomizedTables = ({ data }) => {
     setOpen(true);
   };
 
-  const handlePageChange = (event, value) => {
-    setCurrentPage(value);
-  };
+  // const handlePageChange = (event, value) => {
+  //   setCurrentPage(value);
+  // };
 
-  const paginatedData = data.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  // const paginatedData = data.slice(
+  //   (currentPage - 1) * itemsPerPage,
+  //   currentPage * itemsPerPage
+  // );
 
   return (
     <>
@@ -93,11 +93,9 @@ const CustomizedTables = ({ data }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {paginatedData.map((item, index) => (
+            {data.map((item, index) => (
               <StyledTableRow key={item.id}>
-                <StyledTableCell align="center">
-                  {(currentPage - 1) * itemsPerPage + index + 1}
-                </StyledTableCell>
+                <StyledTableCell align="center">{index + 1}</StyledTableCell>
                 <StyledTableCell align="center">
                   {item.client_name}
                 </StyledTableCell>
@@ -124,12 +122,12 @@ const CustomizedTables = ({ data }) => {
           </TableBody>
         </Table>
       </TableContainer>
-      <Pagination
+      {/* <Pagination
         count={Math.ceil(data.length / itemsPerPage)}
         page={currentPage}
         onChange={handlePageChange}
         sx={{ mt: 2, display: "flex", justifyContent: "center" }}
-      />
+      /> */}
       <EditOrder item={edit} open={open} handleClose={() => setOpen(false)} />
     </>
   );

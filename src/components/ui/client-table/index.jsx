@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -7,8 +6,10 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import Pagination from "@mui/material/Pagination";
+
 import { client } from "@service";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import deleteImg from "./../../../assets/delete.svg";
 
@@ -44,30 +45,29 @@ const ActionButton = styled("img")(({ theme }) => ({
 }));
 
 const CustomizedTables = ({ data }) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+  
 
-  const deleteItem = async (id) => {
+  const deleteItem = async (id, owner_id) => {
     try {
-      const response = await client.delete(id);
+      console.log("Deleting item with id:", id, "and owner_id:", owner_id);
+      const response = await client.delete(id, owner_id);
+      console.log("Delete response:", response);
       if (response.status === 200) {
         window.location.reload();
       } else {
-        console.error("Delete request failed with status:", response.status);
+        toast.error("Delete request failed with status: " + response.status);
       }
     } catch (error) {
-      console.error("Error deleting item:", error);
+      console.error("Delete request error:", error);
+      if (error.response && error.response.data && error.response.data.error) {
+        toast.error(error.response.data.error);
+      } else {
+        toast.error("Error deleting item: " + error.message);
+      }
     }
   };
 
-  const handlePageChange = (event, value) => {
-    setCurrentPage(value);
-  };
-
-  const paginatedData = data.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  
 
   return (
     <>
@@ -85,11 +85,9 @@ const CustomizedTables = ({ data }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {paginatedData.map((item, index) => (
-              <StyledTableRow key={item.id}>
-                <StyledTableCell align="center">
-                  {(currentPage - 1) * itemsPerPage + index + 1}
-                </StyledTableCell>
+            {data.map((item, index) => (
+              <StyledTableRow key={(item.id, item.owner_id)}>
+                <StyledTableCell align="center">{index + 1}</StyledTableCell>
                 <StyledTableCell align="center">
                   {item.full_name}
                 </StyledTableCell>
@@ -103,7 +101,7 @@ const CustomizedTables = ({ data }) => {
                   <ActionButton
                     src={deleteImg}
                     alt="Delete"
-                    onClick={() => deleteItem(item.id)}
+                    onClick={() => deleteItem(item.id, item.owner_id)}
                   />
                 </StyledTableCell>
               </StyledTableRow>
@@ -111,12 +109,7 @@ const CustomizedTables = ({ data }) => {
           </TableBody>
         </Table>
       </TableContainer>
-      <Pagination
-        count={Math.ceil(data.length / itemsPerPage)}
-        page={currentPage}
-        onChange={handlePageChange}
-        sx={{ mt: 2, display: "flex", justifyContent: "center" }}
-      />
+      
     </>
   );
 };
